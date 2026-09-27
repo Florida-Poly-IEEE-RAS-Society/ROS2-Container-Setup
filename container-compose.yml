@@ -7,6 +7,6 @@ services:
     ipc: "host"
     volumes:
       # Map a local 'src' directory to the generic workspace inside the container
-      - ./src:/workspace/src:Z
+      - ./ros_ws/src:/workspace/src:Z
     stdin_open: true
     tty: true
