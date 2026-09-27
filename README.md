@@ -7,6 +7,7 @@ A container setup for ROS 2 Jazzy development. The image builds on `ros:jazzy-ro
 | File | Purpose |
 |------|---------|
 | `Containerfile` | Builds the ROS 2 Jazzy image. |
+| `.github/workflows/container-publish.yml` | Builds the image and publishes it to `ghcr.io`. |
 | `container-compose.yml` | Runs the image with host networking and a mounted source directory. |
 | `ros_ws/src/` | ROS 2 package sources. Mounted at `/workspace/src` in the container. |
 
@@ -18,12 +19,14 @@ You need one of these tools:
 - Docker with `docker compose`.
 - Apple `container` with `container-compose` (macOS on Apple silicon).
 
-## Build and run
+## Pull and run
 
-1. Build the image:
+A GitHub Actions workflow builds the image and publishes it to the GitHub Container Registry. The image supports `linux/amd64` and `linux/arm64`. You do not need to build the image yourself.
+
+1. Pull the image:
 
    ```sh
-   podman compose -f container-compose.yml build
+   podman pull ghcr.io/florida-poly-ieee-ras-society/ros2-container-setup:latest
    ```
 
 2. Start the container in the background:
@@ -43,10 +46,34 @@ To use Docker, replace `podman` with `docker` in each command.
 To use Apple `container`, use these commands:
 
 ```sh
-container-compose -f container-compose.yml build
+container image pull ghcr.io/florida-poly-ieee-ras-society/ros2-container-setup:latest
 container-compose -f container-compose.yml up -d
 container exec -it ros2_workspace bash
 ```
+
+To get a newer image, run the pull command again. Then run `up -d` again.
+
+## Build the image locally
+
+Build the image yourself only if you change the `Containerfile`:
+
+```sh
+podman compose -f container-compose.yml build
+```
+
+With Apple `container`, use `container-compose -f container-compose.yml build`.
+
+## Image tags
+
+The workflow in `.github/workflows/container-publish.yml` publishes these tags:
+
+| Tag | Source |
+|-----|--------|
+| `latest` | The newest commit on `main`. |
+| `sha-<commit>` | One specific commit. |
+| `1.2.3`, `1.2` | A Git tag such as `v1.2.3`. |
+
+Pull requests build the image to test it. The workflow does not publish pull request images.
 
 ## Inside the container
 
