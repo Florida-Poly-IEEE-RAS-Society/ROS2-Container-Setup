@@ -1,12 +1,12 @@
 services:
   ros_env:
-    build: .
+    build:
+      context: .
+      dockerfile: Containerfile
     container_name: ros2_workspace
     image: localhost/ros2-jazzy-workspace:latest
     network_mode: "host"
     ipc: "host"
     volumes:
-      # Map a local 'src' directory to the generic workspace inside the container
       - ./ros_ws/src:/workspace/src:Z
-    stdin_open: true
-    tty: true
+    command: ["sleep", "infinity"]

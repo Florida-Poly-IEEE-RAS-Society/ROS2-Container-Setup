@@ -12,7 +12,11 @@ A container setup for ROS 2 Jazzy development. The image builds on `ros:jazzy-ro
 
 ## Requirements
 
-- Podman with `podman compose`, or Docker with `docker compose`.
+You need one of these tools:
+
+- Podman with `podman compose`.
+- Docker with `docker compose`.
+- Apple `container` with `container-compose` (macOS on Apple silicon).
 
 ## Build and run
 
@@ -36,6 +40,14 @@ A container setup for ROS 2 Jazzy development. The image builds on `ros:jazzy-ro
 
 To use Docker, replace `podman` with `docker` in each command.
 
+To use Apple `container`, use these commands:
+
+```sh
+container-compose -f container-compose.yml build
+container-compose -f container-compose.yml up -d
+container exec -it ros2_workspace bash
+```
+
 ## Inside the container
 
 The shell sources `/opt/ros/jazzy/setup.bash` at start. The working directory is `/workspace`. Your local `./ros_ws/src` directory appears at `/workspace/src`.
@@ -57,6 +69,10 @@ source install/setup.bash
 - **`:Z` volume flag**: Podman relabels the mounted directory for SELinux. Docker on systems without SELinux ignores the flag.
 
 NOTE: On macOS, containers run inside a Linux VM. `network_mode: host` connects to the VM network, not the Mac network. ROS 2 discovery between the container and the Mac does not work in this mode.
+
+NOTE: Apple `container` ignores `network_mode: host`. The container gets its own address on the `192.168.64.0/24` network.
+
+- **`command: ["sleep", "infinity"]`**: Keeps the container running so you can open a shell with `exec`. Apple `container` cannot start a detached container with both `stdin_open` and `tty` set, so the file does not use those keys.
 
 ## Stop the container
 
